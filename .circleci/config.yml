@@ -1,0 +1,26 @@
+version: 2.1
+
+orbs:
+  cloudsmith: cloudsmith/cloudsmith@dev:0.1.0
+
+workflows:
+  cloudsmith_publish:
+    jobs:
+      - publish
+
+jobs:
+  publish:
+    executor:
+      cloudsmith/default
+    steps:
+      - checkout
+      - cloudsmith/ensure-api-key
+      - cloudsmith/install-cli
+      - run:
+          name: Build Python package
+          command: python setup.py bdist_wheel
+      - cloudsmith/publish:
+          cloudsmith-repository: cloudsmith/examples
+          package-path: dist/*.whl
+          package-format: python
+          allow-republish: true
